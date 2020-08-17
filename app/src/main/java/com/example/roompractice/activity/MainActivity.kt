@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity() {
             }
         })
         screen.rv.adapter = adapter
-
         CoroutineScope(IO).launch {
             val models = MyRoomDatabase.getInstance(this@MainActivity).roomDao().getUsers()
             setRvData(models)
