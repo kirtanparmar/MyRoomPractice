@@ -3,30 +3,36 @@ package com.example.roompractice.activity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.roompractice.activity.home.MainActivityViewModel
 import com.example.roompractice.adapter.OnUserListOptionClickListener
 import com.example.roompractice.adapter.UserListAdapter
 import com.example.roompractice.databinding.ActivityMainBinding
 import com.example.roompractice.roomDatabase.MyRoomDatabase
 import com.example.roompractice.roomDatabase.tables.UserTable
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.Dispatchers.Main
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var screen: ActivityMainBinding
     private lateinit var adapter: UserListAdapter
+    private lateinit var viewModel: MainActivityViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         screen = ActivityMainBinding.inflate(layoutInflater)
         setContentView(screen.root)
 
+        viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.AndroidViewModelFactory.getInstance(this.application)
+        )
+            .get(MainActivityViewModel::class.java)
         screen.rv.layoutManager = LinearLayoutManager(this)
         adapter = UserListAdapter(object : DiffUtil.ItemCallback<UserTable>() {
             override fun areItemsTheSame(oldItem: UserTable, newItem: UserTable): Boolean =
@@ -44,31 +50,14 @@ class MainActivity : AppCompatActivity() {
             }
         })
         screen.rv.adapter = adapter
-        CoroutineScope(IO).launch {
-            val models = MyRoomDatabase.getInstance(this@MainActivity).roomDao().getUsers()
-            setRvData(models)
-        }
+
+        viewModel.getUsers().observe(this@MainActivity, Observer {
+            adapter.submitList(it)
+        })
 
         screen.fab.setOnClickListener {
-            CoroutineScope(Main).launch {
-                delay(1000)
-                MyRoomDatabase.getInstance(this@MainActivity).roomDao()
-                    .insertUser(UserTable(userName = "Kirtan"))
-                adapter.submitList(
-                    MyRoomDatabase.getInstance(this@MainActivity).roomDao().getUsers()
-                )
-            }
+            viewModel.insert(UserTable(userName = "Kirtan"))
         }
-    }
-
-    private suspend fun setRvData(models: List<UserTable>?) {
-        withContext(Main) {
-            setRVData(models)
-        }
-    }
-
-    private fun setRVData(models: List<UserTable>?) {
-        adapter.submitList(models)
     }
 
 }

@@ -1,5 +1,6 @@
 package com.example.roompractice.roomDatabase
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
@@ -9,7 +10,7 @@ import com.example.roompractice.roomDatabase.tables.UserTable
 interface RoomDAO {
 
     @Query("Select * from user_table")
-    suspend fun getUsers(): List<UserTable>?
+    fun getUsers(): LiveData<List<UserTable>?>
 
     @Insert
     suspend fun insertUser(model: UserTable)
