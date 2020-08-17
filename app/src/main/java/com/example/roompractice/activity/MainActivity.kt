@@ -28,11 +28,10 @@ class MainActivity : AppCompatActivity() {
         screen = ActivityMainBinding.inflate(layoutInflater)
         setContentView(screen.root)
 
-        viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.AndroidViewModelFactory.getInstance(this.application)
-        )
-            .get(MainActivityViewModel::class.java)
+        viewModel =
+            ViewModelProvider(
+                this, ViewModelProvider.AndroidViewModelFactory.getInstance(this.application)
+            ).get(MainActivityViewModel::class.java)
         screen.rv.layoutManager = LinearLayoutManager(this)
         adapter = UserListAdapter(object : DiffUtil.ItemCallback<UserTable>() {
             override fun areItemsTheSame(oldItem: UserTable, newItem: UserTable): Boolean =
