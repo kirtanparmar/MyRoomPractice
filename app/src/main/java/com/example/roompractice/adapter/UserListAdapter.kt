@@ -1,9 +1,7 @@
 package com.example.roompractice.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,7 +10,7 @@ import com.example.roompractice.roomDatabase.tables.UserTable
 
 class UserListAdapter(
     diffUtil: DiffUtil.ItemCallback<UserTable>,
-    val listener: OnUserListOptionClickListener
+    private val listener: OnUserListOptionClickListener
 ) :
     ListAdapter<UserTable, UserListAdapter.UserViewHolder>(diffUtil) {
 
